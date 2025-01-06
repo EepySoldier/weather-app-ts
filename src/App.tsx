@@ -71,7 +71,6 @@ function App() {
           sunset: sunData.results.sunset,
         },
       });
-      console.log(data);
       setWeatherData({
         temperature: data.hourly.temperature_2m[hour],
         cloudcover: data.hourly.cloud_cover[hour] || 0,
