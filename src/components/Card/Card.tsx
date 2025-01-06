@@ -8,7 +8,7 @@ type TCardProps = {
 export default function Card({ title, value }: TCardProps) {
   return (
     <div className="Card">
-      {title}: {value}
+      {title && `${title}:`} {value}
     </div>
   );
 }

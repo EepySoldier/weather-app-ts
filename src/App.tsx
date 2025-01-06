@@ -25,7 +25,7 @@ export type TWeatherData = {
   temperature: number;
   cloudcover: number;
   windspeed: number;
-  precipitation: number;
+  rain: number;
   snowfall: number;
 };
 
@@ -37,6 +37,8 @@ function App() {
   const [loading, setLoading] = useState<boolean>(false);
   const cities = citiesjson as TCity[];
 
+  const hour = new Date().getHours();
+
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
     setSearch(query);
@@ -47,7 +49,7 @@ function App() {
       const matches = cities.filter((city: TCity) =>
         city.name.toLowerCase().includes(query.toLowerCase()),
       );
-      setSuggestions(matches.slice(0, 5));
+      setSuggestions(matches.slice(0, 9));
     }
   };
 
@@ -55,7 +57,7 @@ function App() {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current_weather=true`,
+        `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&hourly=temperature_2m,rain,snowfall,cloud_cover,wind_speed_10m&forecast_days=1`,
       );
       const data = await response.json();
 
@@ -69,13 +71,13 @@ function App() {
           sunset: sunData.results.sunset,
         },
       });
-
+      console.log(data);
       setWeatherData({
-        temperature: data.current_weather.temperature,
-        cloudcover: data.current_weather.cloudcover || 0,
-        windspeed: data.current_weather.windspeed,
-        precipitation: data.current_weather.precipitation || 0,
-        snowfall: data.current_weather.snowfall || 0,
+        temperature: data.hourly.temperature_2m[hour],
+        cloudcover: data.hourly.cloud_cover[hour] || 0,
+        windspeed: data.hourly.wind_speed_10m[hour],
+        rain: data.hourly.rain[hour] || 0,
+        snowfall: data.hourly.snowfall[hour] || 0,
       });
     } catch (error) {
       console.error("Error fetching weather data:", error);
@@ -88,7 +90,6 @@ function App() {
     const [hours, minutes, , period] = time.split(/[:\s]/);
     return `${hours}:${minutes} ${period}`;
   };
-
   return (
     <div className="App">
       {loading ? (

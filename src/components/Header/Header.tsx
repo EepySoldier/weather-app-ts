@@ -1,15 +1,15 @@
 import "./Header.scss";
 
 export default function Header() {
+  const date = new Date();
+  const hour = date.getHours() % 12 || 12;
+  const ampm = date.getHours() >= 12 ? "PM" : "AM";
+  const month = date.toLocaleString("en-US", { month: "long" });
+  const day = date.getDate();
+
   return (
     <h1 className="Header">
-      Weather data for{" "}
-      {new Date().getHours() > 12
-        ? new Date().getHours() - 12
-        : new Date().getHours()}
-      {":"}
-      {new Date().getMinutes().toString().padStart(2, "0")}
-      {new Date().getHours() > 12 ? " PM" : " AM"}
+      Weather data for {`${hour} ${ampm}, ${month} ${day}`}
     </h1>
   );
 }

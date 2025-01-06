@@ -14,16 +14,17 @@ export default function WeatherCards({
   sunHours,
   formatTime,
 }: TWeatherCardsProps) {
+  const precipation = weatherData.rain > 0 || weatherData.snowfall > 0;
   return (
     <div className="WeatherCards">
       <Card title="Temperature" value={`${weatherData.temperature}°C`} />
       <Card title="Cloud Cover" value={`${weatherData.cloudcover}%`} />
       <Card title="Wind Speed" value={`${weatherData.windspeed} km/h`} />
       <Card
-        title="Rain / Snowfall"
+        title={precipation ? "" : "Rain / Snowfall"}
         value={
-          weatherData.precipitation > 0
-            ? `Rain: ${weatherData.precipitation} mm, Snowfall: ${weatherData.snowfall} mm`
+          precipation
+            ? `Rain: ${weatherData.rain} mm, Snowfall: ${weatherData.snowfall} cm`
             : "None"
         }
       />
