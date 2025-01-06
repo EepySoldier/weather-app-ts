@@ -1,22 +1,27 @@
-import React, { useState } from "react";
 import "./App.scss";
+import React, { useState } from "react";
+
+import Header from "./components/Header/Header.tsx";
+import SearchBar from "./components/SearchBar/SearchBar.tsx";
+import WeatherCards from "./components/WeatherCards/WeatherCards.tsx";
+
 import citiesjson from "./assets/cities.json";
 
-type TSun = {
+export type TSun = {
   results: {
     sunrise: string;
     sunset: string;
   };
 };
 
-type City = {
+export type TCity = {
   name: string;
   lat: string;
   lon: string;
   country: string;
 };
 
-type WeatherData = {
+export type TWeatherData = {
   temperature: number;
   cloudcover: number;
   windspeed: number;
@@ -26,11 +31,11 @@ type WeatherData = {
 
 function App() {
   const [search, setSearch] = useState<string>("");
-  const [suggestions, setSuggestions] = useState<City[]>([]);
-  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [suggestions, setSuggestions] = useState<TCity[]>([]);
+  const [weatherData, setWeatherData] = useState<TWeatherData | null>(null);
   const [sunHours, setSunHours] = useState<TSun | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const cities = citiesjson as City[];
+  const cities = citiesjson as TCity[];
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
@@ -39,14 +44,14 @@ function App() {
     if (query.trim() === "") {
       setSuggestions([]);
     } else {
-      const matches = cities.filter((city: City) =>
+      const matches = cities.filter((city: TCity) =>
         city.name.toLowerCase().includes(query.toLowerCase()),
       );
       setSuggestions(matches.slice(0, 5));
     }
   };
 
-  const fetchWeatherData = async (city: City) => {
+  const fetchWeatherData = async (city: TCity) => {
     setLoading(true);
     try {
       const response = await fetch(
@@ -85,85 +90,40 @@ function App() {
   };
 
   return (
-    <div className="app">
+    <div className="App">
       {loading ? (
-        <h1>Loading...</h1> // Show loading message when fetching data
+        <h1>Loading...</h1>
       ) : (
         <>
-          {weatherData !== null && sunHours !== null && (
-            <h1 style={{ marginBottom: "3rem" }}>
-              Weather data for{" "}
-              {new Date().getHours() > 12
-                ? new Date().getHours() - 12
-                : new Date().getHours()}
-              {":"}
-              {new Date().getMinutes().toString().padStart(2, "0")}
-              {new Date().getHours() > 12 ? " PM" : " AM"}
-            </h1>
-          )}
+          {weatherData && sunHours && <Header />}
 
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="Search city..."
-              value={search}
-              onChange={handleSearchChange}
-            />
-            {suggestions.length > 0 && (
-              <ul className="suggestions">
-                {suggestions.map((city) => (
-                  <li
-                    key={city.name}
-                    onClick={() => {
-                      setSearch(city.name);
-                      setSuggestions([]);
-                      fetchWeatherData(city);
-                    }}
-                  >
-                    {city.name}, {city.country}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          <SearchBar
+            search={search}
+            onSearchChange={handleSearchChange}
+            suggestions={suggestions}
+            onCitySelect={(city) => {
+              setSearch(city.name);
+              setSuggestions([]);
+              fetchWeatherData(city);
+            }}
+          />
 
           {weatherData && sunHours && (
-            <div className="weather-cards">
-              <div className="card">
-                Temperature: {weatherData.temperature}°C
-              </div>
-              <div className="card">Cloud Cover: {weatherData.cloudcover}%</div>
-              <div className="card">
-                Wind Speed: {weatherData.windspeed} km/h
-              </div>
-              {weatherData.precipitation > 0 ? (
-                <div className="card">
-                  Rain: {weatherData.precipitation} mm <br />
-                  Snowfall: {weatherData.snowfall} mm
-                </div>
-              ) : (
-                <div className="card">Rain / Snowfall: none</div>
-              )}
-              <div className="two-cards">
-                <div className="card">
-                  Sunrise: {formatTime(sunHours.results.sunrise)}
-                </div>
-                <div className="card">
-                  Sunset: {formatTime(sunHours.results.sunset)}
-                </div>
-              </div>
-            </div>
+            <WeatherCards
+              weatherData={weatherData}
+              sunHours={sunHours}
+              formatTime={formatTime}
+            />
           )}
         </>
       )}
       <div className="credits">
         <h5>
-          Apis used: <a href="https://open-meteo.com/">Open Meteo</a>,{" "}
+          APIs used: <a href="https://open-meteo.com/">Open Meteo</a>,{" "}
           <a href="https://sunrisesunset.io/api/">Sunrise Sunset</a>
         </h5>
       </div>
     </div>
   );
 }
-
 export default App;

@@ -1,0 +1,21 @@
+@use "../../variables" as *;
+
+.SearchBar {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+
+  input {
+    width: 100%;
+    padding: $medium;
+    border: 1px solid #ccc;
+    border-radius: $extraSmall;
+    font-size: $large;
+    outline: none;
+    box-sizing: border-box;
+
+    &:focus {
+      border-color: #007bff;
+    }
+  }
+}

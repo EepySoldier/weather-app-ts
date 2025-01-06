@@ -1,0 +1,12 @@
+@use "../../variables" as *;
+
+.Card {
+  flex: 1 1 calc(50% - 1rem);
+  background: white;
+  padding: $large;
+  border: 1px solid #ccc;
+  border-radius: $extraSmall;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: $large;
+}

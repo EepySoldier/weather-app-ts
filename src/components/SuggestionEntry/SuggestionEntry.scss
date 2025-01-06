@@ -1,0 +1,11 @@
+@use "../../variables" as *;
+
+li {
+  padding: $small;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #f0f4f8;
+  }
+}
